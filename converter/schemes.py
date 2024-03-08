@@ -83,4 +83,24 @@ class JsonFileClass:
         self.annotations = annotations
 
 
+class PrevDataInfoHolder:
+    CATEGORIES_NEW: list = []
+    CATEGORIES_TOTAL: list = []
+    INFO: dict
+
+    IMAGE_INDEX: int = 0
+    ANNOTATION_INDEX: int = 0
+
+    def __init__(self):
+        self.IMAGE_INDEX = 0
+        self.ANNOTATION_INDEX = 0
+        self.CATEGORIES = []
+
+
+    def set_changes(self, imI: int = 0, anI: int = 0):
+        self.IMAGE_INDEX = imI
+        self.ANNOTATION_INDEX = anI
+
+
+
 
