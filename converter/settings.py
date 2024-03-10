@@ -73,7 +73,7 @@ class Settings:
         if return_path is None or not os.path.exists(return_path):
             raise Exception('Path to folder of dataset to load into is invalid')
         self.DATASET_DIR = return_path
-        dir_list = os.listdir(self.DATASET_DIR)
+        dir_list = [f for f in os.listdir(self.DATASET_DIR) if os.path.isdir(os.path.join(self.DATASET_DIR, f))]
         dirs_to_create = [n for n in self.SPLIT_TYPES if not (n in dir_list)]
         self.create_directories(self.DATASET_DIR, dirs_to_create)
 
