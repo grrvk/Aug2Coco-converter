@@ -71,8 +71,12 @@ def _writeJson(dataset_path, split_type, data, load_type):
     """
     path = os.path.join(os.path.join(dataset_path, 'annotations'), split_type)
     if load_type:
-        with open(path+"_labels.json", mode='r+', encoding='utf-8') as outfile:
-            previous_data = json.load(outfile)
+        with open(path+"_labels.json", mode='a+', encoding='utf-8') as outfile:
+            previous_data = json.load(outfile) if os.stat(path+"_labels.json").st_size != 0 else {"info": {},
+                                                                                                  "categories": [],
+                                                                                                  "images": [],
+                                                                                                  "annotations": []}
+            previous_data['info'] = data['info']
             previous_data['categories'].extend(data['categories'])
             previous_data['images'].extend(data['images'])
             previous_data['annotations'].extend(data['annotations'])

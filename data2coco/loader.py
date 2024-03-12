@@ -1,7 +1,7 @@
-from converter.settings import Settings
-from converter.data_process import _writeJson, load_check_json, _dfSplit
-from converter.json_process import _fillJson, set_constant
-from converter.schemes import PrevDataInfoHolder
+from data2coco.settings import Settings
+from data2coco.data_process import _writeJson, load_check_json, _dfSplit
+from data2coco.json_process import _fillJson, set_constant
+from data2coco.schemes import PrevDataInfoHolder
 
 
 class Loader:

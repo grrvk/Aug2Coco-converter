@@ -3,8 +3,8 @@ import os
 from zipfile import ZipFile
 from PIL import Image
 from pandas import DataFrame
-from converter.schemes import InfoClass, CategoryClass, ImageClass, AnnotationClass, JsonFileClass
-from converter.data_process import _findJsonFolder
+from data2coco.schemes import InfoClass, CategoryClass, ImageClass, AnnotationClass, JsonFileClass
+from data2coco.data_process import _findJsonFolder
 
 
 def _setInfo():
@@ -122,7 +122,7 @@ def _fillJson(settings, df, holder, split_type):
     images = _setImages(settings, list(set(df['image'].tolist())), holder.IMAGE_INDEX, split_type)
     annotations = _setAnnotations(df, holder.CATEGORIES_TOTAL, images, holder.ANNOTATION_INDEX)
 
-    data = JsonFileClass(holder.INFO, holder.CATEGORIES_NEW, images, annotations)
+    data = JsonFileClass(holder.INFO, holder.CATEGORIES_TOTAL, images, annotations)
 
     return data.__dict__
 

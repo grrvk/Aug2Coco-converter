@@ -3,17 +3,17 @@
 Module to convert augmented data from zip file to Coco dataset.
 
 ## Run 
-Run with convert function in converter main.py folder. 
+Run with convert function in converter main.py folder.
 
 ```python
-from converter.main import convert
+from data2coco.main import convert
 
 convert(
-     working_directory_path='LOAD_FROM',
-     return_path='CONVERT_TO',
-     split_type='train/val',
-     split_rate='0.8/0.2',
-     upload=True
+  working_directory_path='LOAD_FROM',
+  return_path='CONVERT_TO',
+  split_type='train/val',
+  split_rate='0.8/0.2',
+  upload=True
 )
 ```
 

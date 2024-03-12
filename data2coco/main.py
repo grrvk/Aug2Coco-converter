@@ -1,6 +1,6 @@
-from converter.settings import Settings
-from converter.data_process import _getDf
-from converter.loader import Loader
+from data2coco.settings import Settings
+from data2coco.data_process import _getDf
+from data2coco.loader import Loader
 
 
 def convert(working_directory_path: str, return_path: str | None,
