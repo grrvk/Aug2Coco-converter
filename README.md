@@ -46,6 +46,7 @@ convert_withDf(df, settings)
 
 Settings parameters are similar to settings necessary for convert_withZip, however some changes:
 * working_dir is not necessary - function loads data from DataFrame
+* upload is not necessary 
 * return_path [Optional] - default name if unset is 'df_generated'
 * df_input - parameter **must** be set to True to set loading from df
 
