@@ -1,9 +1,12 @@
 import zipfile
 from zipfile import ZipFile
+
+import cv2
 import pandas as pd
 import numpy as np
 import json
 import os
+from PIL import Image
 
 
 def _findJsonZip(path):
@@ -27,7 +30,7 @@ def _findJsonFolder(path):
     return [file for file in os.listdir(path) if file.endswith(".json") and not file.startswith('__MACOSX')]
 
 
-def _getDf(dr):
+def _getDf(dr: str):
     """
     :param dr: path to zip
     :return: dataframe of json file data
@@ -38,6 +41,22 @@ def _getDf(dr):
             df = pd.read_json(file)
     return df
 
+
+def _loadImages(dr: str):
+    df = _getDf(dr)
+    df = df.assign(PIL=None)
+    with ZipFile(f"{dr}", 'r') as zipFile:
+        for index, row in df.iterrows():
+            path = f"{(dr.split('/')[-1]).split('.')[0]}/{row['image']}"
+            if path in zipFile.namelist():
+                with zipFile.open(path) as file:
+                    image = np.asarray(bytearray(file.read()), dtype="uint8")
+                    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+
+                    #im = Image.open(file)
+                    #im.load()
+                    df.at[index, 'PIL'] = image
+    return df
 
 def _dfSplit(df, rate, starting_idx, last_batch=False):
     """
@@ -71,7 +90,10 @@ def _writeJson(dataset_path, split_type, data, load_type):
     """
     path = os.path.join(os.path.join(dataset_path, 'annotations'), split_type)
     if load_type:
-        with open(path+"_labels.json", mode='a+', encoding='utf-8') as outfile:
+        if not os.path.exists(path+"_labels.json"):
+            temp = open(path+"_labels.json", "x")
+            temp.close()
+        with open(path+"_labels.json", mode='r+', encoding='utf-8') as outfile:
             previous_data = json.load(outfile) if os.stat(path+"_labels.json").st_size != 0 else {"info": {},
                                                                                                   "categories": [],
                                                                                                   "images": [],

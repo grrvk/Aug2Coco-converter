@@ -1,10 +1,11 @@
 import json
 import os
-from zipfile import ZipFile
+import numpy as np
+import cv2
 from PIL import Image
 from pandas import DataFrame
-from data2coco.schemes import InfoClass, CategoryClass, ImageClass, AnnotationClass, JsonFileClass
-from data2coco.data_process import _findJsonFolder
+from aug2coco.schemes import InfoClass, CategoryClass, ImageClass, AnnotationClass, JsonFileClass
+from aug2coco.data_process import _findJsonFolder
 
 
 def _setInfo():
@@ -53,25 +54,25 @@ def set_constant(upload: bool, dataset_path: str, df: DataFrame):
     return _setInfo(), categories, categories + categories_json
 
 
-def _setImages(settings, image_paths, index_increment, split_type):
+def _setImages(settings, df, index_increment, split_type):
     """
     :param settings: settings of paths and splits
-    :param image_paths: list of new images names
+    :param df: dataframe with new data
     :param index_increment: index from which to set id (necessary if uploading)
     :param split_type: train/val/test
     :return: list of dictionaries of images for Coco
     """
     images = []
-    with ZipFile(f"{settings.WORKING_DIR}", 'r') as zipFile:
-        for i, image_path in enumerate(image_paths):
-            path = f"{(settings.WORKING_DIR.split('/')[-1]).split('.')[0]}/{image_path}"
-            if path in zipFile.namelist():
-                with zipFile.open(path) as file:
-                    img = Image.open(file)
-                with open(f"{os.path.join(os.path.join(settings.DATASET_DIR, split_type), image_path)}", "wb") as f:
-                    f.write(zipFile.read(path))
-                image = ImageClass(i + 1 + index_increment, img.width, img.height, image_path.split("/")[-1])
-                images.append(image.__dict__)
+    image_paths = list(set(df['image'].tolist()))
+    for i, image_path in enumerate(image_paths):
+        img = df[df['image'] == image_path]['PIL'].values[0]
+
+        with open(f"{os.path.join(os.path.join(settings.DATASET_DIR, split_type), image_path)}", "wb") as f:
+            f.write(cv2.imencode('.png', img)[1].tobytes())
+        img = Image.fromarray(img)
+        image = ImageClass(i + 1 + index_increment, img.width, img.height, image_path.split("/")[-1])
+        images.append(image.__dict__)
+
     return images
 
 
@@ -119,7 +120,7 @@ def _fillJson(settings, df, holder, split_type):
     :param split_type: train/val/test
     :return: dict of data for Coco json
     """
-    images = _setImages(settings, list(set(df['image'].tolist())), holder.IMAGE_INDEX, split_type)
+    images = _setImages(settings, df, holder.IMAGE_INDEX, split_type)
     annotations = _setAnnotations(df, holder.CATEGORIES_TOTAL, images, holder.ANNOTATION_INDEX)
 
     data = JsonFileClass(holder.INFO, holder.CATEGORIES_TOTAL, images, annotations)

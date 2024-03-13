@@ -3,21 +3,22 @@
 Module to convert augmented data from zip file to Coco dataset.
 
 ## Run 
-Run with convert function in converter main.py folder.
+
+### Folder input
+Run with convert_withZip function from aug2coco.main.     
+Load data from zip folder with images and coco.json file, which contains blocks data.
 
 ```python
-from data2coco.main import convert
+from aug2coco.main import convert_withZip
+from aug2coco.settings import setConvSettings
 
-convert(
-  working_directory_path='LOAD_FROM',
-  return_path='CONVERT_TO',
-  split_type='train/val',
-  split_rate='0.8/0.2',
-  upload=True
-)
+settings = setConvSettings(working_dir='LOAD_FROM_PATH', 
+                           split_type='train/val', 
+                           split_rate='0.6/0.4')
+convert_withZip(settings)
 ```
 
-Parameters:
+Settings parameters for inputs from zip file:
 * working_dir - path to zip with data to convert
 * split_type - x or x/x or x/x/x where x in [train, val, test]
 * split_rate - rates to split (x or x/x or x/x/x)
@@ -28,6 +29,25 @@ Parameters:
     * if unset - return_path is created in the same place as working_dir is with same name + '_CocoFormat' 
 * upload [Optional] - default False, set ***True*** to upload data from working dir to already present Coco dataset 
     * If set True - *return_path* must be passed
+
+### DataFrame input
+Run with convert_withDf function from aug2coco.main.     
+Load data from dataframe with data for blocks.
+
+```python
+from aug2coco.main import convert_withDf
+from aug2coco.settings import setConvSettings
+
+settings = setConvSettings(split_type='train/val', 
+                           split_rate='0.6/0.4',
+                           df_input=True)
+convert_withDf(df, settings)
+```
+
+Settings parameters are similar to settings necessary for convert_withZip, however some changes:
+* working_dir is not necessary - function loads data from DataFrame
+* return_path [Optional] - default name if unset is 'df_generated'
+* df_input - parameter **must** be set to True to set loading from df
 
      
 

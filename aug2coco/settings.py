@@ -30,17 +30,42 @@ class Settings:
         Settings class with directories and split rate
     """
 
-    WORKING_DIR: str
-    DATASET_DIR: str
+    WORKING_DIR: str = None
+    DATASET_DIR: str = None
 
     SPLIT_TYPES: list = []
     SPLIT_RATE: dict = {"train": 0, "val": 0, "test": 0}
+    LOAD_BY_ONE: bool = False
     UPLOAD: bool = False
 
     def __init__(self, **kwargs):
         self.UPLOAD = True if kwargs.get("upload") else False
         self.splitParams(kwargs.get('split_type'), kwargs.get('split_rate'))
 
+        if kwargs.get("df_input"):
+            self.dfInput(**kwargs)
+        else:
+            self.zipInput(**kwargs)
+
+    def __repr__(self):
+        return (f"Config: working_dir = {self.WORKING_DIR}, \n"
+                f"dataset_dir = {self.DATASET_DIR}, \n"
+                f"split_folders = {self.SPLIT_TYPES}, \n"
+                f"split_rate = {self.SPLIT_RATE}, \n"
+                f"is_uploading = {self.UPLOAD} \n")
+
+    def dfInput(self, **kwargs):
+        return_dir_path = kwargs.get('return_path')
+
+        if self.UPLOAD:
+            self.load(return_path=return_dir_path)
+        else:
+            print('Creating dataset')
+            self.DATASET_DIR = os.path.join(return_dir_path, 'dataset_name') \
+                if (return_dir_path is None or not os.path.exists(return_dir_path)) else 'dataset_name'
+            self.create_directories(self.DATASET_DIR, self.SPLIT_TYPES)
+
+    def zipInput(self, **kwargs):
         working_dir_path = kwargs.get('working_dir')
         if (working_dir_path is None or not os.path.exists(working_dir_path)
                 or os.path.splitext(os.path.basename(working_dir_path))[1] != '.zip'):
@@ -52,13 +77,6 @@ class Settings:
             self.load(return_path=return_dir_path)
         else:
             self.create(return_path=return_dir_path)
-
-    def __repr__(self):
-        return (f"Config: workig_dir = {self.WORKING_DIR}, \n"
-                f"dataset_dir = {self.DATASET_DIR}, \n"
-                f"split_folders = {self.SPLIT_TYPES}, \n"
-                f"split_rate = {self.SPLIT_RATE}, \n"
-                f"is_uploading = {self.UPLOAD} \n")
 
     def create_directories(self, dataset_folder: str, dir_names: list):
         if not self.UPLOAD:
@@ -104,7 +122,18 @@ class Settings:
                 except:
                     raise Exception(f'Tried to pass to {split_type} split not float or integer value {split_rates[i]}')
 
-        if sum(self.SPLIT_RATE.values()) != 1:
+        if round(sum(self.SPLIT_RATE.values())) != 1:
             raise Exception('Summ of split rates must be 1')
 
         self.SPLIT_TYPES = [t for t in list(self.SPLIT_RATE.keys()) if self.SPLIT_RATE.get(f'{t}') != 0]
+
+
+def setConvSettings(split_type: str, split_rate: str, working_dir: str = None, return_path: str = None,
+                upload: bool = False, df_input: bool = False):
+
+    return Settings(working_dir=working_dir,
+                    return_path=return_path,
+                    split_type=split_type,
+                    split_rate=split_rate,
+                    upload=upload,
+                    df_input=df_input)
