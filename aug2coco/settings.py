@@ -61,8 +61,8 @@ class Settings:
             self.load(return_path=return_dir_path)
         else:
             print('Creating dataset')
-            self.DATASET_DIR = os.path.join(return_dir_path, 'dataset_name') \
-                if (return_dir_path is None or not os.path.exists(return_dir_path)) else 'dataset_name'
+            self.DATASET_DIR = os.path.join(return_dir_path, 'df_generated') \
+                if (return_dir_path is None or not os.path.exists(return_dir_path)) else 'df_generated'
             self.create_directories(self.DATASET_DIR, self.SPLIT_TYPES)
 
     def zipInput(self, **kwargs):
