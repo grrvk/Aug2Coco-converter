@@ -1,20 +1,21 @@
 ## Converter 
 
-Module to convert augmented data from zip file to Coco dataset.
+Module to convert augmented data from zip file to Coco or Semantic dataset.
 
 ## Run 
 
 ### Folder input
-Run with convert_withZip function from aug2coco.main.     
-Load data from zip folder with images and coco.json file, which contains blocks data.
+Run with convert_withZip function from aug2set.main.     
+Load data from zip folder with images and aug2set.json file, which contains blocks data.
 
 ```python
-from aug2coco.main import convert_withZip
-from aug2coco.settings import setConvSettings
+from aug2set.main import convert_withZip
+from aug2set.settings import setConvSettings
 
 settings = setConvSettings(working_dir='LOAD_FROM_PATH', 
                            split_type='train/val', 
-                           split_rate='0.6/0.4')
+                           split_rate='0.6/0.4',
+                           dataset_type='coco')
 convert_withZip(settings)
 ```
 
@@ -25,22 +26,24 @@ Settings parameters for inputs from zip file:
     * x is number from 0 to 1
     * must be in the same form as *split_type* (split type is x/x - split rate is x/x)
     * sum of numbers must be 1
+* dataset_type - type of dataset to create - 'coco' or 'semantic'
 * return_path [Optional] - path to folder with dataset to load to.
     * if unset - return_path is created in the same place as working_dir is with same name + '_CocoFormat' 
 * upload [Optional] - default False, set ***True*** to upload data from working dir to already present Coco dataset 
     * If set True - *return_path* must be passed
 
 ### DataFrame input
-Run with convert_withDf function from aug2coco.main.     
+Run with convert_withDf function from aug2set.main.     
 Load data from dataframe with data for blocks.
 
 ```python
-from aug2coco.main import convert_withDf
-from aug2coco.settings import setConvSettings
+from aug2set.main import convert_withDf
+from aug2set.settings import setConvSettings
 
 settings = setConvSettings(split_type='train/val', 
                            split_rate='0.6/0.4',
-                           df_input=True)
+                           df_input=True,
+                           dataset_type='coco')
 convert_withDf(df, settings)
 ```
 
